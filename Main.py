@@ -342,7 +342,7 @@ def get_mdhome_url(ch_id):
 		print("Response contents: " + str(md_home))
 	return None
 
-print("Mangospex version 0.0.0 - direpenguin@gmail.com")
+print("Mangospex version 0.0.1 - direpenguin@gmail.com")
 print("Search for manga by title or parameter dictionary (https://api.mangadex.org/docs.html#operation/get-search-manga)")
 config_load()
 if not check_login():
