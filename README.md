@@ -1,6 +1,14 @@
 # Mangaspex
 Command-line API browser for Mangadex
 
-Recommended usage:  Search for your desired manga by title, then choose its result number from the search results to view it and list chapters.  Enter a chapter number to download that chapter.
+Suggested Usage:  Enter your username and password (or ignore the login error).  
+Search for a manga by title, or set up tag filtering and press enter with no search term to search by tags alone.  
+From the search menu, enter the list result number of a desired manga to view its description and chapters.  
+From the chapter view, enter 'a' to download all chapters or select a chapter number to download.  
+You can note the UUID of the manga and use the View command to see it directly without searching.  
+Saved files are in a UUID-named folder in the same directory as Main.py. 
+There is a table of contents file with the name of the manga in the saved directory.
 
-Completely untested: enter "search" then a search param dictionary to use full search API.
+Flow: log in > enter a title > enter result # > download all chapters with 'a'" > enter result # or go to next page of results with a/d ,/.
+
+Param search disabled for now
