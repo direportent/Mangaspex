@@ -244,6 +244,19 @@ def print_manga_styled(manga=None):
 		else: print("No description available.")
 		print("\n")
 
+def print_manga_short(manga=None):
+	if manga is not None:
+		tags = []
+		print(manga["data"]["attributes"]["title"]["en"])
+		for tag in manga["data"]["attributes"]["tags"]:
+			tags.append(tag["attributes"]["name"]["en"])
+		print(tags)
+		print("---")
+		if manga["data"]["attributes"]["description"]["en"] is not None:
+			print(manga["data"]["attributes"]["description"]["en"][0:350])
+		else: print("No description available.")
+		print("\n")
+
 
 def paginated_search(search_response, query, tl_filter=False):
 	page_lim = search_response["limit"]
@@ -255,7 +268,7 @@ def paginated_search(search_response, query, tl_filter=False):
 	for i, manga in enumerate(search_response["results"]):
 		manga_list.append(manga)
 		print("Page result #" + str(i+1) + ", " + str(offset+i+1) + " of " + str(total_results))
-		if get_one_chapter(manga).status_code == 200: print_manga_styled(manga)
+		if get_one_chapter(manga).status_code == 200: print_manga_short(manga)
 		else:
 			print(manga["data"]["attributes"]["title"]["en"])
 			print("No chapters in filtered language.")
@@ -328,15 +341,18 @@ def get_chap_no(chapter):
 	return str(chapter["data"]["attributes"]["chapter"])
 
 def get_one_chapter(manga=None):
-	params = {"limit":100, "manga":manga["data"]["id"], "translatedLanguage":config["tl"]}
+	params = {"limit":100, "manga":manga["data"]["id"], "translatedLanguage[0]":config["tl"]}
 	# print("GET " + str(params))
+	# print("Checking for chapters with query: " + str(params))
 	ch_response = requests.get("https://api.mangadex.org/chapter", params=params)
+	# print(str(ch_response.json()))
 	# print(str(ch_response))
 	return ch_response
 
 def view_manga_chapters(manga=None, title=None):
-	params = {"limit":100, "manga":manga["data"]["id"], "translatedLanguage":config["tl"]}
+	params = {"limit":100, "manga":manga["data"]["id"], "translatedLanguage[0]":config["tl"]}
 	ch_response = requests.get("https://api.mangadex.org/chapter", params=params)
+	# print(str(ch_response.json()))
 	try:
 		ch_json = ch_response.json()
 	except Exception as e:
@@ -344,7 +360,9 @@ def view_manga_chapters(manga=None, title=None):
 			print("There were no chapters with the selected parameters\n" + str(params))
 			params.pop("translatedLanguage")
 			print(str(params))
-			all_lang_res = requests.get("https://api.mangadex.org/chapter", params=params)
+		else:
+			print("Error retrieving chapters: " + str(e))
+			# all_lang_res = requests.get("https://api.mangadex.org/chapter", params=params)
 	#should have only returned 1 manga's chapters
 	if ch_response.status_code == 200:
 		ch_results = ch_json["results"]
@@ -384,7 +402,7 @@ def view_manga_chapters(manga=None, title=None):
 				default_ch_no+=1
 
 			ch_line = chapter["data"]["id"] + "	" + pub_date.split('T')[0] + "	Chapter " + chap_no + "		" + tl_lang + "	" + title
-			ch_formatted_str+=ch_line + "\n"
+			ch_formatted_str+=ch_line.encode(errors="replace").decode(errors="replace") + "\n"
 			print(ch_line)
 			#might want to check for chapter version and pick highest
 			dl_menu[chap_no]=chapter
